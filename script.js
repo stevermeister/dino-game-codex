@@ -9,14 +9,18 @@ let isJumping = false;
 let isPlaying = false;
 let isCrouching = false;
 let score = 0;
-let speedMs = 1500;
+const SPEED_INITIAL = 2200;
+let speedMs = SPEED_INITIAL;
 let frameId = null;
 let lastTime = null;
 let hitTimeoutId = null;
-const SPEED_MIN = 700;
-const SPEED_STEP = 40;
+const SPEED_MIN = 900;
+const SPEED_STEP = 28;
 const BIRD_BASE_CHANCE = 0.2;
 const BIRD_MAX_CHANCE = 0.7;
+
+let audioContext = null;
+let masterGain = null;
 
 const OBSTACLE_VARIANTS = {
   cactus: {
@@ -93,6 +97,73 @@ function randomizeObstacle() {
   obstacle.setAttribute('aria-label', variant.label);
 }
 
+function ensureAudio() {
+  if (masterGain && audioContext) {
+    if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+    return true;
+  }
+  try {
+    const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextCtor) {
+      return false;
+    }
+    audioContext = new AudioContextCtor();
+    masterGain = audioContext.createGain();
+    masterGain.gain.value = 0.35;
+    masterGain.connect(audioContext.destination);
+    return true;
+  } catch (error) {
+    console.warn('Audio unavailable:', error);
+    return false;
+  }
+}
+
+function playTone({
+  frequency,
+  duration,
+  type = 'sine',
+  volume = 0.3,
+  attack = 0.01,
+  release = 0.12,
+  pitchEnd,
+}) {
+  if (!ensureAudio() || !audioContext) return;
+  const now = audioContext.currentTime;
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(frequency, now);
+  if (typeof pitchEnd === 'number') {
+    oscillator.frequency.linearRampToValueAtTime(pitchEnd, now + duration);
+  }
+
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.linearRampToValueAtTime(volume, now + attack);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration + release);
+
+  oscillator.connect(gain);
+  gain.connect(masterGain);
+
+  oscillator.start(now);
+  oscillator.stop(now + duration + release + 0.02);
+}
+
+function playStartSound() {
+  playTone({ frequency: 420, pitchEnd: 560, duration: 0.18, type: 'triangle', volume: 0.35 });
+  playTone({ frequency: 640, pitchEnd: 720, duration: 0.16, type: 'square', volume: 0.22, attack: 0.015 });
+}
+
+function playJumpSound() {
+  playTone({ frequency: 740, pitchEnd: 920, duration: 0.22, type: 'square', volume: 0.28 });
+}
+
+function playHitSound() {
+  playTone({ frequency: 220, pitchEnd: 90, duration: 0.3, type: 'sawtooth', volume: 0.32, attack: 0.005 });
+}
+
 function startGame() {
   if (isPlaying) return;
   if (hitTimeoutId) {
@@ -102,14 +173,16 @@ function startGame() {
   stopCrouch();
   updateScore(0);
   resetObstacle();
+  ensureAudio();
   stage.classList.remove('paused');
   stage.classList.remove('hit');
   startButton.classList.add('hidden');
-  speedMs = 1500;
+  speedMs = SPEED_INITIAL;
   stage.style.setProperty('--speed', `${speedMs}ms`);
   isPlaying = true;
   lastTime = null;
   frameId = requestAnimationFrame(loop);
+  playStartSound();
 }
 
 function endGame() {
@@ -132,6 +205,7 @@ function endGame() {
     updateHighScore(Math.floor(score));
   }
   lastTime = null;
+  playHitSound();
 }
 
 function loop(timestamp) {
@@ -194,6 +268,7 @@ function jump() {
   }
   isJumping = true;
   dino.classList.add('jump');
+  playJumpSound();
   setTimeout(() => {
     dino.classList.remove('jump');
     isJumping = false;
@@ -282,4 +357,5 @@ document.addEventListener('visibilitychange', () => {
 
 stage.classList.add('paused');
 startButton.classList.remove('hidden');
+stage.style.setProperty('--speed', `${speedMs}ms`);
 randomizeObstacle();
