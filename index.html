@@ -20,14 +20,17 @@
       </header>
       <section class="stage paused" aria-label="Dino game stage">
         <div id="dino" role="img" aria-label="Dino"></div>
-        <div id="obstacle" role="img" aria-label="Cactus"></div>
+        <div id="obstacle" class="cactus" role="img" aria-label="Obstacle"></div>
         <div id="ground"></div>
         <div id="clouds"></div>
         <button id="start-button" type="button">Tap or Press Space to Start</button>
       </section>
     </main>
     <footer class="instructions">
-      <p>Press <kbd>Space</kbd> or tap the screen to jump. Avoid the cactus!</p>
+      <p>
+        Press <kbd>Space</kbd>/<kbd>↑</kbd> or tap the top half of the stage to jump.
+        Hold <kbd>↓</kbd>/<kbd>S</kbd> or press the lower half to duck under flyers.
+      </p>
     </footer>
     <script src="script.js"></script>
   </body>
