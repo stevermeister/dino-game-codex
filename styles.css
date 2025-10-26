@@ -2,7 +2,10 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   --bg: #f7f7f7;
   --ground: #e0d2b7;
-  --dino: #555;
+  --dino: #3f8f5a;
+  --dino-dark: #2f6a42;
+  --dino-light: #8fd49f;
+  --dino-accent: #ff9a76;
   --cactus: #2e7d32;
   --accent: #ff7043;
 }
@@ -85,41 +88,180 @@ body {
 }
 
 #dino {
+  --dino-offset: 0px;
   position: absolute;
   bottom: 40px;
   left: 40px;
-  width: 48px;
-  height: 52px;
-  background: linear-gradient(135deg, var(--dino), #222);
-  border-radius: 12px 12px 8px 8px;
-  transform-origin: bottom;
-  animation: run 0.5s steps(2) infinite;
+  width: 68px;
+  height: 60px;
+  transform: translateY(calc(var(--dino-offset, 0px)));
+  transform-origin: bottom center;
   will-change: transform;
 }
 
-#dino::after {
+#dino > span {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+#dino .dino-tail {
+  left: 6px;
+  bottom: 24px;
+  width: 28px;
+  height: 20px;
+  background: linear-gradient(135deg, var(--dino-light), var(--dino));
+  border-radius: 18px 12px 14px 14px;
+  transform-origin: 70% 50%;
+  box-shadow: -6px -12px 0 -8px var(--dino-light);
+  animation: tail-wave 0.9s ease-in-out infinite;
+}
+
+#dino .dino-body {
+  left: 22px;
+  bottom: 12px;
+  width: 36px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--dino-light), var(--dino-dark));
+  border-radius: 20px 22px 16px 16px;
+  box-shadow: inset -6px -4px 0 rgba(0, 0, 0, 0.18);
+}
+
+#dino .dino-body::before {
   content: '';
   position: absolute;
-  top: 12px;
-  right: 10px;
+  inset: 10px 10px 6px 6px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0));
+  border-radius: 40% 40% 50% 50%;
+  opacity: 0.8;
+}
+
+#dino .dino-head {
+  left: 40px;
+  bottom: 26px;
+  width: 32px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--dino-light), var(--dino));
+  border-radius: 22px 24px 18px 18px;
+  box-shadow: inset -5px -4px 0 rgba(0, 0, 0, 0.15);
+}
+
+#dino .dino-eye {
+  position: absolute;
+  top: 8px;
+  right: 8px;
   width: 10px;
   height: 10px;
   background: #fff;
   border-radius: 50%;
+  box-shadow: inset -2px -2px 0 rgba(0, 0, 0, 0.25);
+}
+
+#dino .dino-eye::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  background: #212121;
+  border-radius: 50%;
+}
+
+#dino .dino-cheek {
+  position: absolute;
+  bottom: 6px;
+  right: 9px;
+  width: 12px;
+  height: 8px;
+  background: var(--dino-accent);
+  opacity: 0.75;
+  border-radius: 50%;
+}
+
+#dino .dino-arm {
+  left: 36px;
+  bottom: 22px;
+  width: 18px;
+  height: 8px;
+  background: linear-gradient(135deg, var(--dino-light), var(--dino-dark));
+  border-radius: 10px;
+  transform-origin: left center;
+  transform: rotate(-18deg);
+  box-shadow: inset -2px -2px 0 rgba(0, 0, 0, 0.25);
+}
+
+#dino .dino-leg {
+  bottom: 0;
+  width: 16px;
+  height: 18px;
+  background: linear-gradient(135deg, var(--dino-dark), #1f4d2f);
+  border-radius: 10px 10px 6px 6px;
+  animation: leg-run 0.45s ease-in-out infinite;
+  transform-origin: top center;
+  box-shadow: inset -3px -3px 0 rgba(0, 0, 0, 0.25);
+}
+
+#dino .dino-leg.back {
+  left: 26px;
+}
+
+#dino .dino-leg.front {
+  left: 44px;
+  animation-delay: 0.22s;
+}
+
+#dino .dino-spikes {
+  left: 24px;
+  bottom: 36px;
+  width: 16px;
+  height: 16px;
+  background: var(--dino-dark);
+  border-radius: 50% 50% 12% 12%;
+  transform: rotate(-12deg);
+  box-shadow: 10px -8px 0 -2px var(--dino-dark), 20px -10px 0 -2px var(--dino-dark);
+}
+
+#dino.jumping .dino-leg {
+  animation: none;
+  transform: rotate(18deg) translateY(-4px);
+}
+
+#dino.jumping .dino-arm {
+  bottom: 28px;
+  transform: rotate(-42deg);
+}
+
+#dino.jumping .dino-tail {
+  animation-duration: 0.6s;
 }
 
 #dino.crouch {
-  height: 36px;
-  width: 60px;
-  border-radius: 16px 16px 12px 12px;
-  animation: none;
+  height: 48px;
 }
 
-#dino.crouch::after {
-  top: 8px;
-  right: 18px;
-  width: 8px;
-  height: 8px;
+#dino.crouch .dino-body {
+  height: 24px;
+  bottom: 10px;
+}
+
+#dino.crouch .dino-head {
+  bottom: 18px;
+}
+
+#dino.crouch .dino-tail {
+  bottom: 20px;
+}
+
+#dino.crouch .dino-spikes {
+  bottom: 30px;
+}
+
+#dino.crouch .dino-leg {
+  height: 14px;
+  bottom: -2px;
+}
+
+#dino.crouch .dino-arm {
+  bottom: 18px;
+  transform: rotate(-32deg);
 }
 
 #obstacle {
@@ -233,14 +375,15 @@ body {
   font-size: 0.9rem;
 }
 
-.jump {
-  animation: jump 0.6s cubic-bezier(0.32, 0.72, 0.34, 1.16);
-}
-
 .paused #ground,
 .paused #obstacle,
 .paused #clouds,
 .paused #dino {
+  animation-play-state: paused;
+}
+
+.paused #dino .dino-tail,
+.paused #dino .dino-leg {
   animation-play-state: paused;
 }
 
@@ -269,30 +412,23 @@ body {
   }
 }
 
-@keyframes run {
-  from {
-    clip-path: inset(0 0 0 0);
+@keyframes leg-run {
+  0%,
+  100% {
+    transform: rotate(10deg);
   }
-  to {
-    clip-path: inset(0 0 0 0);
+  50% {
+    transform: rotate(-18deg) translateY(2px);
   }
 }
 
-@keyframes jump {
-  0% {
-    transform: translateY(0);
-  }
-  30% {
-    transform: translateY(-120px);
+@keyframes tail-wave {
+  0%,
+  100% {
+    transform: rotate(-18deg);
   }
   50% {
-    transform: translateY(-140px);
-  }
-  70% {
-    transform: translateY(-120px);
-  }
-  100% {
-    transform: translateY(0);
+    transform: rotate(-6deg);
   }
 }
 
