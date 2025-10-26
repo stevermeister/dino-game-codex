@@ -1,0 +1,22 @@
+export const SPEED_INITIAL = 2200;
+export const SPEED_MIN = 900;
+export const SPEED_STEP = 28;
+export const BIRD_BASE_CHANCE = 0.2;
+export const BIRD_MAX_CHANCE = 0.7;
+
+export const OBSTACLE_VARIANTS = {
+  cactus: {
+    className: 'cactus',
+    width: 32,
+    height: 50,
+    bottom: [40, 40],
+    label: 'Cactus',
+  },
+  bird: {
+    className: 'bird',
+    width: 48,
+    height: 32,
+    bottom: [110, 150],
+    label: 'Pterodactyl',
+  },
+};
