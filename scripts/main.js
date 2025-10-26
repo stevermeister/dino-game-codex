@@ -35,6 +35,13 @@ obstacle.addEventListener('animationiteration', (event) => {
   if (event.animationName !== 'move-obstacle') {
     return;
   }
+  const obstacleRect = obstacle.getBoundingClientRect();
+  const stageRect = stage.getBoundingClientRect();
+
+  if (obstacleRect.right > stageRect.left) {
+    return;
+  }
+
   obstacleManager.randomize(scoreboard.score);
 });
 
