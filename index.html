@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dino Run</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="game">
+      <header class="hud">
+        <div class="scoreboard">
+          <span class="label">Score:</span>
+          <span id="score">0</span>
+        </div>
+        <div class="scoreboard">
+          <span class="label">High:</span>
+          <span id="high-score">0</span>
+        </div>
+      </header>
+      <section class="stage paused" aria-label="Dino game stage">
+        <div id="dino" role="img" aria-label="Dino"></div>
+        <div id="obstacle" role="img" aria-label="Cactus"></div>
+        <div id="ground"></div>
+        <div id="clouds"></div>
+        <button id="start-button" type="button">Tap or Press Space to Start</button>
+      </section>
+    </main>
+    <footer class="instructions">
+      <p>Press <kbd>Space</kbd> or tap the screen to jump. Avoid the cactus!</p>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>

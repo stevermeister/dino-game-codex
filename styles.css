@@ -1,0 +1,261 @@
+:root {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --bg: #f7f7f7;
+  --ground: #e0d2b7;
+  --dino: #555;
+  --cactus: #2e7d32;
+  --accent: #ff7043;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--bg) 70%, var(--ground) 70%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #333;
+}
+
+.game {
+  width: min(600px, 90vw);
+  margin-top: 2rem;
+}
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  padding: 0 0.5rem 0.5rem;
+}
+
+.scoreboard {
+  display: flex;
+  gap: 0.25rem;
+  align-items: baseline;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+  --speed: 1.5s;
+}
+
+#ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--ground),
+    var(--ground) 10px,
+    #d4c4a5 10px,
+    #d4c4a5 20px
+  );
+  animation: scroll-ground calc(var(--speed) / 1.6) linear infinite;
+  transform: translateZ(0);
+}
+
+#clouds {
+  position: absolute;
+  top: 20px;
+  left: -100%;
+  width: 200%;
+  height: 60px;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60" viewBox="0 0 200 60"><g fill="%23fff" opacity="0.8"><ellipse cx="30" cy="35" rx="30" ry="18"/><ellipse cx="70" cy="25" rx="25" ry="15"/><ellipse cx="130" cy="30" rx="35" ry="20"/><ellipse cx="170" cy="25" rx="20" ry="12"/></g></svg>')
+    repeat-x;
+  background-size: 200px 60px;
+  animation: move-clouds 30s linear infinite;
+}
+
+#dino {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+  width: 48px;
+  height: 52px;
+  background: linear-gradient(135deg, var(--dino), #222);
+  border-radius: 12px 12px 8px 8px;
+  transform-origin: bottom;
+  animation: run 0.5s steps(2) infinite;
+}
+
+#dino::after {
+  content: '';
+  position: absolute;
+  top: 12px;
+  right: 10px;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 50%;
+}
+
+#obstacle {
+  position: absolute;
+  bottom: 40px;
+  right: -60px;
+  width: 32px;
+  height: 50px;
+  background: linear-gradient(90deg, #1b5e20, var(--cactus));
+  border-radius: 8px 8px 4px 4px;
+  animation: move-obstacle var(--speed) linear infinite;
+}
+
+#obstacle::before,
+#obstacle::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 30px;
+  background: inherit;
+  border-radius: 6px;
+}
+
+#obstacle::before {
+  left: -10px;
+  bottom: 10px;
+}
+
+#obstacle::after {
+  right: -10px;
+  bottom: 12px;
+}
+
+#start-button {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: min(260px, 70%);
+  height: 52px;
+  border: none;
+  border-radius: 26px;
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 2;
+}
+
+#start-button:hover,
+#start-button:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.25);
+  outline: none;
+}
+
+.instructions {
+  margin-top: 1.5rem;
+  color: #555;
+  text-align: center;
+}
+
+.instructions kbd {
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.jump {
+  animation: jump 0.6s cubic-bezier(0.32, 0.72, 0.34, 1.16);
+}
+
+.paused #ground,
+.paused #obstacle,
+.paused #clouds,
+.paused #dino {
+  animation-play-state: paused;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@keyframes move-obstacle {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-120vw);
+  }
+}
+
+@keyframes run {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes jump {
+  0% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-120px);
+  }
+  50% {
+    transform: translateY(-140px);
+  }
+  70% {
+    transform: translateY(-120px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes scroll-ground {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 200px 0;
+  }
+}
+
+@keyframes move-clouds {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(50%);
+  }
+}
+
+@media (max-width: 480px) {
+  .game {
+    margin-top: 1.5rem;
+  }
+
+  .hud {
+    font-size: 1rem;
+  }
+
+  #dino {
+    left: 24px;
+  }
+}
