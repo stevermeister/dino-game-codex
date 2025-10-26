@@ -30,7 +30,11 @@ document.addEventListener('visibilitychange', () => {
   game.handleVisibilityChange(document.hidden);
 });
 
-obstacle.addEventListener('animationiteration', () => {
+obstacle.addEventListener('animationiteration', (event) => {
+  // Ignore iterations from nested animations (e.g. bird wing flaps)
+  if (event.animationName !== 'move-obstacle') {
+    return;
+  }
   obstacleManager.randomize(scoreboard.score);
 });
 
