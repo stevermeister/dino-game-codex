@@ -133,17 +133,21 @@ export class Game {
   checkCollision() {
     const dinoRect = this.dino.getBoundingClientRect();
     const obstacleRect = this.obstacleManager.getBoundingClientRect();
+    const type = this.obstacleManager.getType();
+
+    const topPadding = type === 'bird' ? 4 : 12;
+    const bottomPadding = type === 'bird' ? 4 : 6;
 
     const isHorizontalOverlap =
       dinoRect.right - 18 > obstacleRect.left && obstacleRect.right > dinoRect.left + 16;
     const isVerticalOverlap =
-      dinoRect.bottom - 6 > obstacleRect.top && dinoRect.top + 12 < obstacleRect.bottom;
+      dinoRect.bottom - bottomPadding > obstacleRect.top &&
+      dinoRect.top + topPadding < obstacleRect.bottom;
 
     if (!(isHorizontalOverlap && isVerticalOverlap)) {
       return;
     }
 
-    const type = this.obstacleManager.getType();
     if (type === 'bird' && this.isCrouching) {
       const hasClearance = dinoRect.top + 12 >= obstacleRect.bottom;
       if (hasClearance) {
