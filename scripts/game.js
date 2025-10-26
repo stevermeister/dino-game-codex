@@ -1,4 +1,4 @@
-import { SPEED_INITIAL, SPEED_MIN, SPEED_STEP } from './constants.js';
+import { GRAVITY, JUMP_VELOCITY, SPEED_INITIAL, SPEED_MIN, SPEED_STEP } from './constants.js';
 
 export class Game {
   constructor({ stage, dino, obstacleManager, startButton, scoreboard, audio }) {
@@ -16,6 +16,11 @@ export class Game {
     this.frameId = null;
     this.lastTime = null;
     this.hitTimeoutId = null;
+    this.jumpHeight = 0;
+    this.jumpVelocity = 0;
+
+    this.gravity = GRAVITY;
+    this.jumpForce = JUMP_VELOCITY;
 
     this.loop = this.loop.bind(this);
   }
@@ -26,6 +31,7 @@ export class Game {
     this.startButton.classList.remove('hidden');
     this.stage.style.setProperty('--speed', `${this.speedMs}ms`);
     this.obstacleManager.randomize(this.scoreboard.score);
+    this.resetJumpState();
   }
 
   isRunning() {
@@ -55,6 +61,7 @@ export class Game {
 
     this.isPlaying = true;
     this.lastTime = null;
+    this.resetJumpState();
     this.frameId = requestAnimationFrame(this.loop);
     this.audio.playStartSound();
   }
@@ -83,6 +90,7 @@ export class Game {
 
     this.scoreboard.updateHighScoreIfNeeded();
     this.lastTime = null;
+    this.resetJumpState();
     this.audio.playHitSound();
   }
 
@@ -105,6 +113,9 @@ export class Game {
 
     const delta = timestamp - this.lastTime;
     this.lastTime = timestamp;
+    const physicsDelta = Math.min(delta, 120);
+
+    this.updateJump(physicsDelta);
     this.increaseDifficulty(delta);
     this.checkCollision();
     this.scoreboard.addScore(delta / 100);
@@ -124,9 +135,9 @@ export class Game {
     const obstacleRect = this.obstacleManager.getBoundingClientRect();
 
     const isHorizontalOverlap =
-      dinoRect.right - 10 > obstacleRect.left && obstacleRect.right > dinoRect.left + 10;
+      dinoRect.right - 18 > obstacleRect.left && obstacleRect.right > dinoRect.left + 16;
     const isVerticalOverlap =
-      dinoRect.bottom - 8 > obstacleRect.top && dinoRect.top + 8 < obstacleRect.bottom;
+      dinoRect.bottom - 6 > obstacleRect.top && dinoRect.top + 12 < obstacleRect.bottom;
 
     if (!(isHorizontalOverlap && isVerticalOverlap)) {
       return;
@@ -153,13 +164,10 @@ export class Game {
     }
 
     this.isJumping = true;
-    this.dino.classList.add('jump');
+    this.jumpHeight = 0;
+    this.jumpVelocity = this.jumpForce;
+    this.dino.classList.add('jumping');
     this.audio.playJumpSound();
-
-    setTimeout(() => {
-      this.dino.classList.remove('jump');
-      this.isJumping = false;
-    }, 600);
   }
 
   startCrouch() {
@@ -189,5 +197,31 @@ export class Game {
 
   handleBlur() {
     this.stopCrouch();
+  }
+
+  updateJump(deltaMs) {
+    if (!this.isJumping && this.jumpHeight === 0) {
+      return;
+    }
+
+    const deltaSeconds = deltaMs / 1000;
+    this.jumpVelocity -= this.gravity * deltaSeconds;
+    this.jumpHeight = Math.max(0, this.jumpHeight + this.jumpVelocity * deltaSeconds);
+
+    if (this.jumpHeight === 0) {
+      this.jumpVelocity = 0;
+      this.isJumping = false;
+      this.dino.classList.remove('jumping');
+    }
+
+    this.dino.style.setProperty('--dino-offset', `${-this.jumpHeight}px`);
+  }
+
+  resetJumpState() {
+    this.jumpHeight = 0;
+    this.jumpVelocity = 0;
+    this.isJumping = false;
+    this.dino.classList.remove('jumping');
+    this.dino.style.setProperty('--dino-offset', '0px');
   }
 }

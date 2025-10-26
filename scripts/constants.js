@@ -1,8 +1,11 @@
-export const SPEED_INITIAL = 2200;
-export const SPEED_MIN = 900;
-export const SPEED_STEP = 28;
+export const SPEED_INITIAL = 3200;
+export const SPEED_MIN = 1600;
+export const SPEED_STEP = 16;
 export const BIRD_BASE_CHANCE = 0.2;
 export const BIRD_MAX_CHANCE = 0.7;
+
+export const JUMP_VELOCITY = 1120;
+export const GRAVITY = 4200;
 
 export const OBSTACLE_VARIANTS = {
   cactus: {
